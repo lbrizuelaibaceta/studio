@@ -1,12 +1,26 @@
+
 import { z } from 'zod';
 
 const interestLevels = ["caliente", "templado", "frío"] as const;
 const requiredString = z.string().min(1, "Este campo es requerido.");
 
+export const salonNames = [
+  "Alameda",
+  "Multiespacio",
+  "San Juan",
+  "San Luis",
+  "San Martin",
+  "San Rafael",
+  "Villa Krause",
+  "Villa Mercedes"
+] as const;
+export type SalonName = typeof salonNames[number];
+
+
 const baseLeadSchema = z.object({
   interestLevel: z.enum(interestLevels, { required_error: "Seleccione un nivel de interés." }),
   comment: z.string().optional(),
-  salonName: requiredString,
+  salonName: z.enum(salonNames, { required_error: "Seleccione un salón." }),
   userName: requiredString,
 });
 

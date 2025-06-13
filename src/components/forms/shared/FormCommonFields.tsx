@@ -1,3 +1,4 @@
+
 import type { Control } from "react-hook-form";
 import {
   FormControl,
@@ -6,11 +7,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Flame, Sun, Snowflake } from "lucide-react";
 import type { InterestLevel } from "@/types";
+import { salonNames, type SalonName } from "../LeadFormSchema";
 
 interface FormCommonFieldsProps {
   control: Control<any>; // Using any for control due to different form types
@@ -21,6 +30,8 @@ const interestOptions: { value: InterestLevel; label: string; icon: React.Elemen
   { value: "templado", label: "Lead templado", icon: Sun },
   { value: "frío", label: "Lead frío", icon: Snowflake },
 ];
+
+const salonOptions: { value: SalonName; label: string }[] = salonNames.map(name => ({ value: name, label: name }));
 
 export default function FormCommonFields({ control }: FormCommonFieldsProps) {
   return (
@@ -83,9 +94,20 @@ export default function FormCommonFields({ control }: FormCommonFieldsProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Salón del usuario</FormLabel>
-              <FormControl>
-                <Input placeholder="Nombre del salón" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione un salón" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {salonOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,7 +45,7 @@ export default function InPersonForm() {
       arrivalMethod: undefined,
       interestLevel: undefined,
       comment: "",
-      salonName: "",
+      salonName: undefined,
       userName: "",
     },
   });

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,7 +38,7 @@ export default function WhatsAppForm() {
       subChannel: undefined,
       interestLevel: undefined,
       comment: "",
-      salonName: "",
+      salonName: undefined,
       userName: "",
     },
   });
