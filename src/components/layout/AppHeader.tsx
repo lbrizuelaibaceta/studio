@@ -9,10 +9,10 @@ export default function AppHeader() {
         <Link href="/" className="text-2xl font-headline text-primary hover:text-primary/80 transition-colors">
           Registro de Salones
         </Link>
-        <Button variant="ghost" size="icon" asChild>
+        <Button variant="ghost" asChild>
           <Link href="/">
             <Home className="h-5 w-5" />
-            <span className="sr-only">Inicio</span>
+            <span>Inicio</span>
           </Link>
         </Button>
       </div>
