@@ -1,4 +1,6 @@
+
 import Link from 'next/link';
+import Image from 'next/image';
 import { Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -6,8 +8,14 @@ export default function AppHeader() {
   return (
     <header className="bg-card border-b border-border shadow-sm">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-headline text-primary hover:text-primary/80 transition-colors">
-          Registro de Salones
+        <Link href="/" className="hover:opacity-80 transition-opacity">
+          <Image
+            src="https://www.rribaceta.com.ar/equipamiento-comercial/img/logo-17237281228.jpg"
+            alt="Ibaceta Logo"
+            width={150}
+            height={40}
+            priority
+          />
         </Link>
         <Button variant="ghost" asChild>
           <Link href="/">
