@@ -6,7 +6,7 @@ import type { LeadFormData, StoredLead, StoredWhatsAppLead, StoredCallLead, Stor
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID, // Used by initializeApp
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
@@ -15,50 +15,52 @@ const firebaseConfig = {
 let app: FirebaseApp | undefined;
 let db: Firestore | undefined;
 
-// Check for NEXT_PUBLIC_FIREBASE_PROJECT_ID at the module scope
-if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+
+if (!projectId) {
   console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   console.error("CRITICAL Firebase Configuration Error:");
   console.error("The NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable is NOT SET.");
   console.error("Your application CANNOT connect to Firebase without it.");
-  console.error("Please ensure it is correctly set in your .env.local file AND you have RESTARTED your development server.");
-  console.error("1. Find your Project ID in Firebase Console (Project settings).");
-  console.error("2. Create or open .env.local file in your project root.");
-  console.error("3. Add: NEXT_PUBLIC_FIREBASE_PROJECT_ID=\"YOUR_PROJECT_ID_HERE\"");
-  console.error("4. Restart your server (e.g., `npm run dev`).");
+  console.error("--- Cómo Solucionarlo ---");
+  console.error("1. Encuentra tu 'ID del Proyecto' en la consola de Firebase (firebase.google.com) -> Configuración del proyecto.");
+  console.error("2. Crea un archivo llamado '.env.local' en la CARPETA PRINCIPAL de tu proyecto (al mismo nivel que 'package.json').");
+  console.error("3. Dentro de '.env.local', añade la línea: NEXT_PUBLIC_FIREBASE_PROJECT_ID=\"TU_ID_DE_PROYECTO_AQUI\" (reemplaza con tu ID real).");
+  console.error("4. Asegúrate de que las otras variables NEXT_PUBLIC_FIREBASE_... también estén en '.env.local'.");
+  console.error("5. ¡MUY IMPORTANTE! DETÉN tu servidor de desarrollo (Ctrl+C en la terminal) y VUELVE A INICIARLO (ej. 'npm run dev').");
   console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  // `app` and `db` remain undefined. Subsequent Firestore operations will fail gracefully
-  // in their respective checks within addLeadToFirestore and getLeadsFromFirestore.
 } else {
-  // Project ID is set, proceed with initialization
   if (!getApps().length) {
     try {
+      console.log(`Attempting to initialize Firebase with projectId: ${projectId}`);
       app = initializeApp(firebaseConfig);
+      console.log("Firebase app initialized successfully.");
     } catch (initError) {
       console.error("CRITICAL Firebase App Initialization Error:", initError);
-      // app remains undefined
+      app = undefined; // Ensure app is undefined if init fails
     }
   } else {
     app = getApps()[0];
+    console.log("Firebase app already initialized.");
   }
 
   if (app) {
     try {
       db = getFirestore(app);
+      console.log("Firestore DB instance obtained successfully.");
     } catch (firestoreError) {
       console.error("CRITICAL Firestore Initialization Error (getFirestore):", firestoreError);
-      // db remains undefined
+      db = undefined; // Ensure db is undefined if getFirestore fails
     }
   } else {
-    // This case implies app initialization failed even if projectId was present.
-    console.error("Firebase app is not properly initialized, cannot get Firestore instance. Check for previous initialization errors.");
+    console.error("Firebase app is not initialized, cannot get Firestore instance.");
+    db = undefined;
   }
 }
 
 export const addLeadToFirestore = async (leadData: LeadFormData) => {
-  // Check if db is initialized and projectId is present
-  if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-    const errorMessage = "Firebase is not configured, projectId is missing, or Firestore DB initialization failed. Cannot save lead.";
+  if (!db) {
+    const errorMessage = "Error al guardar: Firebase no está configurado correctamente. Falta el ID del Proyecto. Por favor, revisa el archivo '.env.local', asegúrate de que NEXT_PUBLIC_FIREBASE_PROJECT_ID esté bien puesto, y REINICIA el servidor de desarrollo.";
     console.error("Error in addLeadToFirestore:", errorMessage);
     return { success: false, error: errorMessage };
   }
@@ -67,17 +69,13 @@ export const addLeadToFirestore = async (leadData: LeadFormData) => {
       ...leadData,
       createdAt: serverTimestamp(),
     });
-    console.log("Lead added with ID:", docRef.id, ". Using projectId:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+    console.log("Lead added with ID:", docRef.id, ". Using projectId:", projectId);
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error("Error adding document to Firestore (raw): ", error);
-    let errorMessage = "Failed to add document to Firestore.";
+    let errorMessage = "Error al registrar la consulta en la base de datos.";
     if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === 'string') {
-      errorMessage = error;
-    } else {
-      errorMessage = "An unknown error occurred while adding document.";
+      errorMessage = `${errorMessage} Detalles: ${error.message}`;
     }
     console.error("Error adding document to Firestore (processed message): ", errorMessage);
     return { success: false, error: errorMessage };
@@ -85,12 +83,9 @@ export const addLeadToFirestore = async (leadData: LeadFormData) => {
 };
 
 export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
-  // Check if db is initialized and projectId is present
-  if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-    console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.error("CRITICAL Firebase Configuration Error in getLeadsFromFirestore:");
-    console.error("Firebase is not configured, projectId is missing, or Firestore DB initialization failed. Cannot fetch leads.");
-    console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  if (!db) {
+    const errorMessage = "Error al obtener registros: Firebase no está configurado correctamente. Falta el ID del Proyecto. Revisa '.env.local' y REINICIA el servidor.";
+    console.error("Error in getLeadsFromFirestore:", errorMessage);
     return [];
   }
   try {
@@ -141,8 +136,8 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
           console.warn(`Unknown channel type: ${data.channelType} for doc ID: ${doc.id}`);
           lead = {
             ...leadBase,
-            channelType: data.channelType, 
-          } as StoredLead; 
+            channelType: data.channelType,
+          } as StoredLead;
       }
       leads.push(lead);
     });
@@ -153,4 +148,4 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
   }
 };
 
-export { db }; // Export db, acknowledging it can be undefined if initialization failed.
+export { db };
