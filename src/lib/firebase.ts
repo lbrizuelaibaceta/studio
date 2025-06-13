@@ -6,15 +6,16 @@ import type { LeadFormData, StoredLead, StoredWhatsAppLead, StoredCallLead, Stor
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID, // Used by initializeApp
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp;
+let app: FirebaseApp | undefined;
+let db: Firestore | undefined;
 
-// Enhanced check for NEXT_PUBLIC_FIREBASE_PROJECT_ID
+// Check for NEXT_PUBLIC_FIREBASE_PROJECT_ID at the module scope
 if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
   console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   console.error("CRITICAL Firebase Configuration Error:");
@@ -26,26 +27,38 @@ if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
   console.error("3. Add: NEXT_PUBLIC_FIREBASE_PROJECT_ID=\"YOUR_PROJECT_ID_HERE\"");
   console.error("4. Restart your server (e.g., `npm run dev`).");
   console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-}
-
-if (!getApps().length) {
-  if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    // Mock app if projectId is missing, to prevent further crashes during init,
-    // though Firebase operations will fail. The console errors above are the primary alert.
-    app = { name: "mock-app", options: {}, automaticDataCollectionEnabled: false };
-    console.error("Firebase app initialized with MOCK configuration due to missing Project ID. Firebase will NOT work.");
-  }
+  // `app` and `db` remain undefined. Subsequent Firestore operations will fail gracefully
+  // in their respective checks within addLeadToFirestore and getLeadsFromFirestore.
 } else {
-  app = getApps()[0];
-}
+  // Project ID is set, proceed with initialization
+  if (!getApps().length) {
+    try {
+      app = initializeApp(firebaseConfig);
+    } catch (initError) {
+      console.error("CRITICAL Firebase App Initialization Error:", initError);
+      // app remains undefined
+    }
+  } else {
+    app = getApps()[0];
+  }
 
-const db: Firestore = getFirestore(app);
+  if (app) {
+    try {
+      db = getFirestore(app);
+    } catch (firestoreError) {
+      console.error("CRITICAL Firestore Initialization Error (getFirestore):", firestoreError);
+      // db remains undefined
+    }
+  } else {
+    // This case implies app initialization failed even if projectId was present.
+    console.error("Firebase app is not properly initialized, cannot get Firestore instance. Check for previous initialization errors.");
+  }
+}
 
 export const addLeadToFirestore = async (leadData: LeadFormData) => {
-  if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-    const errorMessage = "Firebase projectId is missing. Cannot save lead.";
+  // Check if db is initialized and projectId is present
+  if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+    const errorMessage = "Firebase is not configured, projectId is missing, or Firestore DB initialization failed. Cannot save lead.";
     console.error("Error in addLeadToFirestore:", errorMessage);
     return { success: false, error: errorMessage };
   }
@@ -54,7 +67,7 @@ export const addLeadToFirestore = async (leadData: LeadFormData) => {
       ...leadData,
       createdAt: serverTimestamp(),
     });
-    console.log("Lead added with ID:", docRef.id, ". Using projectId:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "PROJECT ID NOT SET");
+    console.log("Lead added with ID:", docRef.id, ". Using projectId:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error("Error adding document to Firestore (raw): ", error);
@@ -72,12 +85,13 @@ export const addLeadToFirestore = async (leadData: LeadFormData) => {
 };
 
 export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
-  if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+  // Check if db is initialized and projectId is present
+  if (!db || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
     console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     console.error("CRITICAL Firebase Configuration Error in getLeadsFromFirestore:");
-    console.error("NEXT_PUBLIC_FIREBASE_PROJECT_ID is NOT SET. Cannot fetch leads.");
+    console.error("Firebase is not configured, projectId is missing, or Firestore DB initialization failed. Cannot fetch leads.");
     console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    return []; // Return empty array if projectId is missing
+    return [];
   }
   try {
     const leadsCollection = collection(db, "leads");
@@ -94,8 +108,8 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
         comment: data.comment,
         salonName: data.salonName,
         userName: data.userName,
-        createdAt: createdAtTimestamp ? createdAtTimestamp.toDate() : new Date(), // Convert to Date object
-        channelType: data.channelType, // Ensure channelType is part of the base for discrimination
+        createdAt: createdAtTimestamp ? createdAtTimestamp.toDate() : new Date(),
+        channelType: data.channelType,
       };
 
       let lead: StoredLead;
@@ -124,15 +138,11 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
           } as StoredInPersonLead;
           break;
         default:
-          // Fallback or error handling if channelType is unknown
           console.warn(`Unknown channel type: ${data.channelType} for doc ID: ${doc.id}`);
-          // Create a generic lead or skip if appropriate
           lead = {
             ...leadBase,
-            channelType: data.channelType, // Keep original if unknown but cast
-          } as StoredLead; // This might not satisfy specific StoredLead subtypes
-          // To be safe, you might want to skip this record or handle it more robustly
-          // For now, we'll add it but it might lack specific properties
+            channelType: data.channelType, 
+          } as StoredLead; 
       }
       leads.push(lead);
     });
@@ -143,4 +153,4 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
   }
 };
 
-export { db };
+export { db }; // Export db, acknowledging it can be undefined if initialization failed.
