@@ -7,7 +7,7 @@ export default function AppHeader() {
     <header className="bg-card border-b border-border shadow-sm">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="text-2xl font-headline text-primary hover:text-primary/80 transition-colors">
-          Salon Insights
+          Registro de Salones
         </Link>
         <Button variant="ghost" size="icon" asChild>
           <Link href="/">
