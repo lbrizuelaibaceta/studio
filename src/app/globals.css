@@ -9,7 +9,7 @@ body {
 
 @layer base {
   :root {
-    --background: 255 33% 96%; /* Very light lavender #F4F2F9 */
+    --background: 218 40% 96%; /* Very light blue #F2F5FC */
     --foreground: 220 15% 25%; /* Dark slate blue for text */
     --card: 0 0% 100%; /* White cards */
     --card-foreground: 220 15% 25%; /* Dark slate blue for text on cards */
@@ -19,15 +19,15 @@ body {
     --primary-foreground: 20 14% 4%; /* Dark Brown/Black for contrast on orange */
     --secondary: 218 100% 34%; /* Blue #0040ae */
     --secondary-foreground: 210 40% 98%; /* Light Grey/White for contrast on blue */
-    --muted: 255 20% 90%; /* Muted lavender */
-    --muted-foreground: 255 20% 55%; /* Muted lavender text */
-    --accent: 260 47% 91%; /* Pale violet #E8DFF5 */
-    --accent-foreground: 260 47% 25%; /* Darker shade of accent for text */
+    --muted: 218 30% 90%; /* Muted light blue #DDE5F5 */
+    --muted-foreground: 218 30% 55%; /* Muted light blue text #6F83A8 */
+    --accent: 218 50% 93%; /* Light blue #E6EDFA */
+    --accent-foreground: 218 50% 30%; /* Darker blue for text on light blue accent #263E73 */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 255 20% 85%; /* Lavender-toned border */
-    --input: 255 20% 88%; /* Lavender-toned input background */
-    --ring: 29 88% 60%; /* Ring color based on new primary */
+    --border: 218 30% 85%; /* Blue-toned border #CACEF0 */
+    --input: 218 30% 88%; /* Blue-toned input background #D6DCF2 */
+    --ring: 29 88% 60%; /* Ring color based on primary (Orange) */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -45,24 +45,24 @@ body {
   }
   .dark {
     --background: 220 15% 10%; /* Dark slate blue */
-    --foreground: 255 33% 90%; /* Light lavender for text */
+    --foreground: 218 60% 90%; /* Light blue for text #DCE7F7 */
     --card: 220 15% 15%; /* Slightly lighter dark slate blue for cards */
-    --card-foreground: 255 33% 90%;
+    --card-foreground: 218 60% 90%; /* Light blue for text on cards */
     --popover: 220 15% 10%;
-    --popover-foreground: 255 33% 90%;
+    --popover-foreground: 218 60% 90%;
     --primary: 29 88% 58%; /* Lighter Orange for dark mode (e.g. #f6963f) */
     --primary-foreground: 20 14% 4%; /* Dark Brown/Black (contrast on orange) */
     --secondary: 218 100% 45%; /* Lighter Blue for dark mode (e.g. #0059e5) */
     --secondary-foreground: 210 40% 98%; /* Light Grey/White (contrast on blue) */
-    --muted: 255 20% 20%;
-    --muted-foreground: 255 20% 60%;
-    --accent: 260 47% 80%; /* Slightly desaturated pale violet */
-    --accent-foreground: 260 47% 15%;
+    --muted: 218 15% 20%; /* Dark blue muted #2A2F3B */
+    --muted-foreground: 218 25% 60%; /* Medium blue muted text #7B8BAA */
+    --accent: 218 15% 15%; /* Darker blue for hover #20242B */
+    --accent-foreground: 218 60% 90%; /* Light blue text for dark accent background #DCE7F7 */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 255 20% 30%;
-    --input: 255 20% 25%;
-    --ring: 29 88% 65%; /* Ring color based on new primary (Dark Mode) */
+    --border: 218 15% 30%; /* Dark blue border #3F4659 */
+    --input: 218 15% 25%; /* Dark blue input background #343A4A */
+    --ring: 29 88% 65%; /* Ring color based on new primary (Dark Mode Orange) */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
