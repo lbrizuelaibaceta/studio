@@ -24,7 +24,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center py-12">
       <PageHeader
-        title="Bienvenido a Salon Insights"
+        title="Bienvenido al Registro de Salones"
         description="Seleccione una acción para continuar."
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl mt-8">
