@@ -6,19 +6,19 @@
 @layer base {
   :root {
     --background: 218 40% 96%; /* Very light blue #F2F5FC */
-    --foreground: 220 15% 25%; /* Dark slate blue for text */
+    --foreground: 218 100% 34.1%; /* Blue #0040ae */
     --card: 0 0% 100%; /* White cards */
-    --card-foreground: 220 15% 25%; /* Dark slate blue for text on cards */
+    --card-foreground: 218 100% 34.1%; /* Blue #0040ae for text on cards */
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 25%;
+    --popover-foreground: 218 100% 34.1%; /* Blue #0040ae */
     --primary: 29 88% 52%; /* Orange #f08219 */
-    --primary-foreground: 20 14% 4%; /* Dark Brown/Black for contrast on orange */
+    --primary-foreground: 218 100% 34.1%; /* Blue #0040ae for text on orange */
     --secondary: 218 100% 34%; /* Blue #0040ae */
     --secondary-foreground: 210 40% 98%; /* Light Grey/White for contrast on blue */
     --muted: 218 30% 90%; /* Muted light blue #DDE5F5 */
-    --muted-foreground: 218 30% 55%; /* Muted light blue text #6F83A8 */
+    --muted-foreground: 218 50% 75%; /* Lighter, bluer muted text #A7BBDC */
     --accent: 218 50% 93%; /* Light blue #E6EDFA */
-    --accent-foreground: 218 50% 30%; /* Darker blue for text on light blue accent #263E73 */
+    --accent-foreground: 218 100% 34.1%; /* Blue #0040ae for text on light blue accent */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 218 30% 85%; /* Blue-toned border #CACEF0 */
@@ -41,19 +41,19 @@
   }
   .dark {
     --background: 220 15% 10%; /* Dark slate blue */
-    --foreground: 218 60% 90%; /* Light blue for text #DCE7F7 */
+    --foreground: 218 100% 90%; /* Light saturated blue text #CCE5FF */
     --card: 220 15% 15%; /* Slightly lighter dark slate blue for cards */
-    --card-foreground: 218 60% 90%; /* Light blue for text on cards */
+    --card-foreground: 218 100% 90%; /* Light saturated blue text #CCE5FF on cards */
     --popover: 220 15% 10%;
-    --popover-foreground: 218 60% 90%;
+    --popover-foreground: 218 100% 90%; /* Light saturated blue text #CCE5FF */
     --primary: 29 88% 58%; /* Lighter Orange for dark mode (e.g. #f6963f) */
-    --primary-foreground: 20 14% 4%; /* Dark Brown/Black (contrast on orange) */
+    --primary-foreground: 218 100% 90%; /* Light saturated blue text #CCE5FF on dark orange */
     --secondary: 218 100% 45%; /* Lighter Blue for dark mode (e.g. #0059e5) */
     --secondary-foreground: 210 40% 98%; /* Light Grey/White (contrast on blue) */
     --muted: 218 15% 20%; /* Dark blue muted #2A2F3B */
-    --muted-foreground: 218 25% 60%; /* Medium blue muted text #7B8BAA */
+    --muted-foreground: 218 40% 70%; /* Lighter, bluer muted text for dark mode #9EAFC8 */
     --accent: 218 15% 15%; /* Darker blue for hover #20242B */
-    --accent-foreground: 218 60% 90%; /* Light blue text for dark accent background #DCE7F7 */
+    --accent-foreground: 218 100% 90%; /* Light saturated blue text #CCE5FF for dark accent */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 218 15% 30%; /* Dark blue border #3F4659 */
