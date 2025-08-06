@@ -22,12 +22,12 @@ if (!projectId) {
   console.error("CRITICAL Firebase Configuration Error:");
   console.error("The NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable is NOT SET.");
   console.error("Your application CANNOT connect to Firebase without it.");
-  console.error("--- Cómo Solucionarlo ---");
-  console.error("1. Encuentra tu 'ID del Proyecto' en la consola de Firebase (firebase.google.com) -> Configuración del proyecto.");
-  console.error("2. Crea un archivo llamado '.env.local' en la CARPETA PRINCIPAL de tu proyecto (al mismo nivel que 'package.json').");
-  console.error("3. Dentro de '.env.local', añade la línea: NEXT_PUBLIC_FIREBASE_PROJECT_ID=\"TU_ID_DE_PROYECTO_AQUI\" (reemplaza con tu ID real).");
-  console.error("4. Asegúrate de que las otras variables NEXT_PUBLIC_FIREBASE_... también estén en '.env.local'.");
-  console.error("5. ¡MUY IMPORTANTE! DETÉN tu servidor de desarrollo (Ctrl+C en la terminal) y VUELVE A INICIARLO (ej. 'npm run dev').");
+  console.error("--- How to Fix ---");
+  console.error("1. Find your 'Project ID' in your Firebase console (firebase.google.com) -> Project settings.");
+  console.error("2. Create a file named '.env.local' in your project's ROOT folder (the same level as 'package.json').");
+  console.error("3. Inside '.env.local', add the line: NEXT_PUBLIC_FIREBASE_PROJECT_ID=\"YOUR_PROJECT_ID_HERE\" (replace with your actual ID).");
+  console.error("4. Make sure the other NEXT_PUBLIC_FIREBASE_... variables are also in '.env.local'.");
+  console.error("5. VERY IMPORTANT! STOP your development server (Ctrl+C in the terminal) and RESTART it (e.g., 'npm run dev').");
   console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 } else {
   if (!getApps().length) {
