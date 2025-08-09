@@ -4,12 +4,12 @@ export type ChannelType = "WhatsApp" | "Llamada" | "Presencial";
 
 export interface BaseLead {
   interestLevel: InterestLevel;
-  comment?: string;
+  comment: string;
   salonName: string;
   userName:string;
 }
 
-export type WhatsAppSubChannel = "Meta Ads" | "Facebook Marketplace" | "Página web / Google";
+export type WhatsAppSubChannel = "Meta Ads" | "No identificado";
 export interface WhatsAppLead extends BaseLead {
   channelType: "WhatsApp";
   subChannel: WhatsAppSubChannel;

@@ -20,13 +20,26 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import FormCommonFields from "./shared/FormCommonFields";
 import type { WhatsAppSubChannel } from "@/types";
-import { ShoppingBag, Store, Globe } from 'lucide-react';
+import { ShoppingBag, Globe } from 'lucide-react';
 
 const subChannelOptions: { value: WhatsAppSubChannel; label: string; icon: React.ElementType }[] = [
   { value: "Meta Ads", label: "Meta Ads", icon: ShoppingBag },
-  { value: "Facebook Marketplace", label: "Facebook Marketplace", icon: Store },
-  { value: "Página web / Google", label: "Página web / Google", icon: Globe },
+  { value: "No identificado", label: "No identificado", icon: Globe },
 ];
+
+const WhatsAppIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className="text-green-500"
+  >
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 4.315 1.919 6.054l-1.212 4.433 4.57-1.196z" />
+  </svg>
+);
+
 
 export default function WhatsAppForm() {
   const { toast } = useToast();
@@ -64,7 +77,10 @@ export default function WhatsAppForm() {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Registrar Consulta WhatsApp</CardTitle>
+        <CardTitle className="font-headline text-2xl flex items-center gap-2">
+            <WhatsAppIcon />
+            Registrar Consulta WhatsApp
+        </CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -79,7 +95,7 @@ export default function WhatsAppForm() {
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                     >
                       {subChannelOptions.map((option) => (
                         <FormItem key={option.value} className="flex items-center space-x-3 space-y-0">

@@ -19,14 +19,14 @@ export type SalonName = typeof salonNames[number];
 
 const baseLeadSchema = z.object({
   interestLevel: z.enum(interestLevels, { required_error: "Seleccione un nivel de interés." }),
-  comment: z.string().optional(),
+  comment: requiredString,
   salonName: z.enum(salonNames, { required_error: "Seleccione un salón." }),
   userName: requiredString,
 });
 
 export const whatsAppLeadSchema = baseLeadSchema.extend({
   channelType: z.literal("WhatsApp"),
-  subChannel: z.enum(["Meta Ads", "Facebook Marketplace", "Página web / Google"], { required_error: "Seleccione un subcanal." }),
+  subChannel: z.enum(["Meta Ads", "No identificado"], { required_error: "Seleccione un subcanal." }),
 });
 export type WhatsAppFormData = z.infer<typeof whatsAppLeadSchema>;
 

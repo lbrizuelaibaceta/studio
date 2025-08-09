@@ -26,9 +26,9 @@ interface FormCommonFieldsProps {
 }
 
 const interestOptions: { value: InterestLevel; label: string; icon: React.ElementType }[] = [
-  { value: "caliente", label: "Lead caliente", icon: Flame },
-  { value: "templado", label: "Lead templado", icon: Sun },
-  { value: "frío", label: "Lead frío", icon: Snowflake },
+  { value: "caliente", label: "Muy interesado", icon: Flame },
+  { value: "templado", label: "Interesado", icon: Sun },
+  { value: "frío", label: "Desinteresado", icon: Snowflake },
 ];
 
 const salonOptions: { value: SalonName; label: string }[] = salonNames.map(name => ({ value: name, label: name }));
@@ -74,10 +74,10 @@ export default function FormCommonFields({ control }: FormCommonFieldsProps) {
         name="comment"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Descripción de la consulta (opcional)</FormLabel>
+            <FormLabel>Descripción de la consulta</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Ingrese detalles adicionales sobre la consulta..."
+                placeholder="Ej: Consulta por exhibidora vertical Briket 5000..."
                 className="resize-none"
                 {...field}
               />
@@ -93,7 +93,7 @@ export default function FormCommonFields({ control }: FormCommonFieldsProps) {
           name="salonName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Salón del usuario</FormLabel>
+              <FormLabel>Salón</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -117,9 +117,9 @@ export default function FormCommonFields({ control }: FormCommonFieldsProps) {
           name="userName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Usuario</FormLabel>
+              <FormLabel>Vendedor</FormLabel>
               <FormControl>
-                <Input placeholder="Nombre del usuario" {...field} />
+                <Input placeholder="Nombre del vendedor" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
