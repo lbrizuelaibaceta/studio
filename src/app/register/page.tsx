@@ -67,6 +67,7 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
     try {
+      // Corrected argument order: email, password, userName, salonName
       await register(data.email, data.password, data.userName, data.salonName);
       toast({
         title: "Registro exitoso",
