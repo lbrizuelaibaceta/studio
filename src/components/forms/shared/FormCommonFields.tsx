@@ -1,4 +1,6 @@
 
+"use client";
+
 import type { Control } from "react-hook-form";
 import {
   FormControl,
@@ -18,11 +20,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Flame, Sun, Snowflake, XCircle } from "lucide-react";
-import type { InterestLevel } from "@/types";
+import type { InterestLevel, CallSource, ChannelType } from "@/types";
 import { salonNames, type SalonName } from "../LeadFormSchema";
+import { useFormContext } from "react-hook-form";
+
 
 interface FormCommonFieldsProps {
   control: Control<any>; // Using any for control due to different form types
+  channelType: ChannelType;
 }
 
 const interestOptions: { value: InterestLevel; label: string; icon: React.ElementType }[] = [
@@ -34,7 +39,18 @@ const interestOptions: { value: InterestLevel; label: string; icon: React.Elemen
 
 const salonOptions: { value: SalonName; label: string }[] = salonNames.map(name => ({ value: name, label: name }));
 
-export default function FormCommonFields({ control }: FormCommonFieldsProps) {
+const callSourceOptions: { value: CallSource; label: string }[] = [
+  { value: "Google", label: "Google" },
+  { value: "Ya es cliente", label: "Ya es cliente" },
+  { value: "Recomendación", label: "Recomendación" },
+  { value: "Otro", label: "Otro" },
+];
+
+
+export default function FormCommonFields({ control, channelType }: FormCommonFieldsProps) {
+  const { watch } = useFormContext();
+  const watchedSource = watch("source");
+
   return (
     <>
       <FormField
@@ -87,6 +103,52 @@ export default function FormCommonFields({ control }: FormCommonFieldsProps) {
           </FormItem>
         )}
       />
+      
+      {channelType === 'Llamada' && (
+        <>
+          <FormField
+            control={control}
+            name="source"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>¿Cómo conoció la empresa?</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione una opción (opcional)" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {callSourceOptions.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {watchedSource === "Otro" && (
+            <FormField
+              control={control}
+              name="otherSourceDetail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Especifique el otro medio</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ej: Anuncio en revista, volante, etc." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+        </>
+      )}
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField

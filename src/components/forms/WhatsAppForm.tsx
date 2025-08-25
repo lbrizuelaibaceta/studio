@@ -93,7 +93,7 @@ export default function WhatsAppForm() {
                   <FormLabel>Subcanal de origen</FormLabel>
                   <FormControl>
                     <RadioGroup
-                      onValueChange={field.onChange}
+                      onValueValueChange={field.onChange}
                       defaultValue={field.value}
                       className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                     >
@@ -117,7 +117,7 @@ export default function WhatsAppForm() {
                 </FormItem>
               )}
             />
-            <FormCommonFields control={form.control} />
+            <FormCommonFields control={form.control} channelType="WhatsApp" />
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
