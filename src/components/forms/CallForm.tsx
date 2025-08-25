@@ -11,22 +11,34 @@ import { saveLeadAction } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import FormCommonFields from "./shared/FormCommonFields";
+import { useAuth } from "@/context/AuthContext";
+import React from "react";
 
 export default function CallForm() {
   const { toast } = useToast();
   const router = useRouter();
+  const { salon, userName, user } = useAuth(); // Get salon and userName from AuthContext
+
   const form = useForm<CallFormData>({
     resolver: zodResolver(callLeadSchema),
-    defaultValues: {
-      channelType: "Llamada",
-      source: undefined,
-      otherSourceDetail: "",
-      interestLevel: undefined,
-      comment: "",
-      salonName: undefined,
-      userName: "",
-    },
+    // Default values are now set dynamically using useEffect
   });
+
+  // Set default values once user data is available from context
+  React.useEffect(() => {
+    if (user) {
+      form.reset({
+        channelType: "Llamada",
+        source: undefined,
+        otherSourceDetail: "",
+        interestLevel: undefined,
+        comment: "",
+        salonName: salon || undefined, // Set salon from context
+        userName: userName || "",       // Set userName from context
+      });
+    }
+  }, [user, salon, userName, form]);
+
 
   async function onSubmit(data: CallFormData) {
     const result = await saveLeadAction(data);
@@ -36,7 +48,7 @@ export default function CallForm() {
         description: result.message,
       });
       form.reset();
-      router.push("/");
+      router.push("/new-query");
     } else {
       toast({
         title: "Error",
@@ -57,7 +69,7 @@ export default function CallForm() {
             <FormCommonFields control={form.control} channelType="Llamada" />
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
+            <Button type="submit" disabled={form.formState.isSubmitting || !user} className="w-full">
               {form.formState.isSubmitting ? "Registrando..." : "Registrar consulta"}
             </Button>
           </CardFooter>

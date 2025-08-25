@@ -7,7 +7,7 @@ import { MessageSquare } from "lucide-react";
 export default function WhatsAppPage() {
   return (
     <>
-      <BackButton href="/" />
+      <BackButton href="/new-query" />
       <PageHeader 
         title="Canal: WhatsApp"
         description="Complete los detalles de la consulta recibida por WhatsApp."

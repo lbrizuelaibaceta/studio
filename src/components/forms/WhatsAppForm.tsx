@@ -20,10 +20,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import FormCommonFields from "./shared/FormCommonFields";
 import type { WhatsAppSubChannel } from "@/types";
-import { ShoppingBag, Globe } from 'lucide-react';
+import { Globe, MessageSquare } from 'lucide-react';
+import React from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const subChannelOptions: { value: WhatsAppSubChannel; label: string; icon: React.ElementType }[] = [
-  { value: "Meta Ads", label: "Meta Ads", icon: ShoppingBag },
+  { value: "Meta Ads", label: "Meta Ads", icon: MessageSquare },
   { value: "No identificado", label: "No identificado", icon: Globe },
 ];
 
@@ -40,21 +42,28 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-
 export default function WhatsAppForm() {
   const { toast } = useToast();
   const router = useRouter();
+  const { salon, userName, user } = useAuth(); // Get auth context
+
   const form = useForm<WhatsAppFormData>({
     resolver: zodResolver(whatsAppLeadSchema),
-    defaultValues: {
-      channelType: "WhatsApp",
-      subChannel: undefined,
-      interestLevel: undefined,
-      comment: "",
-      salonName: undefined,
-      userName: "",
-    },
   });
+
+  // Set default values once user data is available
+  React.useEffect(() => {
+    if (user) {
+      form.reset({
+        channelType: "WhatsApp",
+        subChannel: undefined,
+        interestLevel: undefined,
+        comment: "",
+        salonName: salon || undefined, // Set salon from context
+        userName: userName || "",       // Set userName from context
+      });
+    }
+  }, [user, salon, userName, form]);
 
   async function onSubmit(data: WhatsAppFormData) {
     const result = await saveLeadAction(data);
@@ -64,7 +73,7 @@ export default function WhatsAppForm() {
         description: result.message,
       });
       form.reset();
-      router.push("/");
+      router.push("/new-query");
     } else {
       toast({
         title: "Error",
@@ -93,7 +102,7 @@ export default function WhatsAppForm() {
                   <FormLabel>Subcanal de origen</FormLabel>
                   <FormControl>
                     <RadioGroup
-                      onValueValueChange={field.onChange}
+                      onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                     >
@@ -120,7 +129,7 @@ export default function WhatsAppForm() {
             <FormCommonFields control={form.control} channelType="WhatsApp" />
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
+            <Button type="submit" disabled={form.formState.isSubmitting || !user} className="w-full">
               {form.formState.isSubmitting ? "Registrando..." : "Registrar consulta"}
             </Button>
           </CardFooter>

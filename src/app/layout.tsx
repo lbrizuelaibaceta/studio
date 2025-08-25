@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import AppHeader from '@/components/layout/AppHeader';
+import { AuthProvider } from '@/context/AuthContext';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 export const metadata: Metadata = {
   title: 'Salon Insights',
@@ -21,11 +23,15 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
-        <AppHeader />
-        <main className="flex-grow container mx-auto px-4 py-8">
-          {children}
-        </main>
-        <Toaster />
+        <AuthProvider>
+          <AppHeader />
+          <main className="flex-grow container mx-auto px-4 py-8">
+            <ProtectedRoute>
+              {children}
+            </ProtectedRoute>
+          </main>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

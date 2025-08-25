@@ -139,4 +139,4 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
   }
 };
 
-export { db };
+export { app, db };

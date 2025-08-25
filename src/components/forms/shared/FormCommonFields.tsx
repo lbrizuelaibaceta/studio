@@ -2,6 +2,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -22,11 +23,11 @@ import { Input } from "@/components/ui/input";
 import { Flame, Sun, Snowflake, XCircle } from "lucide-react";
 import type { InterestLevel, CallSource, ChannelType } from "@/types";
 import { salonNames, type SalonName } from "../LeadFormSchema";
-import { useFormContext } from "react-hook-form";
-
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 
 interface FormCommonFieldsProps {
-  control: Control<any>; // Using any for control due to different form types
+  control: Control<any>;
   channelType: ChannelType;
 }
 
@@ -37,8 +38,6 @@ const interestOptions: { value: InterestLevel; label: string; icon: React.Elemen
   { value: "erroneo", label: "Erroneo/Equivocado", icon: XCircle },
 ];
 
-const salonOptions: { value: SalonName; label: string }[] = salonNames.map(name => ({ value: name, label: name }));
-
 const callSourceOptions: { value: CallSource; label: string }[] = [
   { value: "Google", label: "Google" },
   { value: "Ya es cliente", label: "Ya es cliente" },
@@ -46,10 +45,18 @@ const callSourceOptions: { value: CallSource; label: string }[] = [
   { value: "Otro", label: "Otro" },
 ];
 
-
 export default function FormCommonFields({ control, channelType }: FormCommonFieldsProps) {
-  const { watch } = useFormContext();
+  const { watch, setValue } = useFormContext();
+  const { user, salon, userName } = useAuth();
   const watchedSource = watch("source");
+
+  // Effect to auto-populate hidden fields from auth context
+  useEffect(() => {
+    if (user) {
+      setValue("salonName", salon, { shouldValidate: true });
+      setValue("userName", userName, { shouldValidate: true });
+    }
+  }, [user, salon, userName, setValue]);
 
   return (
     <>
@@ -149,46 +156,9 @@ export default function FormCommonFields({ control, channelType }: FormCommonFie
         </>
       )}
 
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField
-          control={control}
-          name="salonName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Salón</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccione un salón" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {salonOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="userName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Vendedor</FormLabel>
-              <FormControl>
-                <Input placeholder="Nombre del vendedor" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      {/* The Salon and Vendedor fields are now hidden and will be auto-populated */}
+      <FormField control={control} name="salonName" render={() => <Input type="hidden" />} />
+      <FormField control={control} name="userName" render={() => <Input type="hidden" />} />
     </>
   );
 }
