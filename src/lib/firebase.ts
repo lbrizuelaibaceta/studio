@@ -1,6 +1,6 @@
 
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { getFirestore, collection, addDoc, serverTimestamp, Firestore, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
+import { getFirestore, collection, addDoc, serverTimestamp, Firestore, getDocs, query, orderBy, Timestamp, setDoc, doc } from "firebase/firestore";
 import type { LeadFormData, StoredLead, StoredWhatsAppLead, StoredCallLead } from "@/types";
 
 const firebaseConfig = {
@@ -12,64 +12,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp | undefined;
-let db: Firestore | undefined;
-
-const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-
-if (!projectId) {
-  console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  console.error("CRITICAL Firebase Configuration Error:");
-  console.error("The NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable is NOT SET.");
-  console.error("Your application CANNOT connect to Firebase without it.");
-  console.error("--- How to Fix ---");
-  console.error("1. Find your 'Project ID' in your Firebase console (firebase.google.com) -> Project settings.");
-  console.error("2. Create a file named '.env.local' in your project's ROOT folder (the same level as 'package.json').");
-  console.error("3. Inside '.env.local', add the line: NEXT_PUBLIC_FIREBASE_PROJECT_ID=\"YOUR_PROJECT_ID_HERE\" (replace with your actual ID).");
-  console.error("4. Make sure the other NEXT_PUBLIC_FIREBASE_... variables are also in '.env.local'.");
-  console.error("5. VERY IMPORTANT! STOP your development server (Ctrl+C in the terminal) and RESTART it (e.g., 'npm run dev').");
-  console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+// Initialize Firebase
+let app: FirebaseApp;
+if (getApps().length === 0) {
+  if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+    throw new Error("CRITICAL: NEXT_PUBLIC_FIREBASE_PROJECT_ID is not defined in .env.local");
+  }
+  app = initializeApp(firebaseConfig);
 } else {
-  if (!getApps().length) {
-    try {
-      console.log(`Attempting to initialize Firebase with projectId: ${projectId}`);
-      app = initializeApp(firebaseConfig);
-      console.log("Firebase app initialized successfully.");
-    } catch (initError) {
-      console.error("CRITICAL Firebase App Initialization Error:", initError);
-      app = undefined; 
-    }
-  } else {
-    app = getApps()[0];
-    console.log("Firebase app already initialized.");
-  }
-
-  if (app) {
-    try {
-      db = getFirestore(app);
-      console.log("Firestore DB instance obtained successfully.");
-    } catch (firestoreError) {
-      console.error("CRITICAL Firestore Initialization Error (getFirestore):", firestoreError);
-      db = undefined; 
-    }
-  } else {
-    console.error("Firebase app is not initialized, cannot get Firestore instance.");
-    db = undefined;
-  }
+  app = getApps()[0];
 }
 
+const db: Firestore = getFirestore(app);
+
 export const addLeadToFirestore = async (leadData: LeadFormData) => {
-  if (!db) {
-    const errorMessage = "Error al guardar: Firebase no está configurado correctamente. Falta el ID del Proyecto. Por favor, revisa el archivo '.env.local', asegúrate de que NEXT_PUBLIC_FIREBASE_PROJECT_ID esté bien puesto, y REINICIA el servidor de desarrollo.";
-    console.error("Error in addLeadToFirestore:", errorMessage);
-    return { success: false, error: errorMessage };
-  }
   try {
     const docRef = await addDoc(collection(db, "leads"), {
       ...leadData,
       createdAt: serverTimestamp(),
     });
-    console.log("Lead added with ID:", docRef.id, ". Using projectId:", projectId);
+    console.log("Lead added with ID:", docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error("Error adding document to Firestore (raw): ", error);
@@ -83,11 +45,6 @@ export const addLeadToFirestore = async (leadData: LeadFormData) => {
 };
 
 export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
-  if (!db) {
-    const errorMessage = "Error al obtener registros: Firebase no está configurado correctamente. Falta el ID del Proyecto. Revisa '.env.local' y REINICIA el servidor.";
-    console.error("Error in getLeadsFromFirestore:", errorMessage);
-    return [];
-  }
   try {
     const leadsCollection = collection(db, "leads");
     const q = query(leadsCollection, orderBy("createdAt", "desc"));
@@ -139,4 +96,5 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
   }
 };
 
+// Export app and db for use in other parts of the application, like AuthContext.
 export { app, db };
