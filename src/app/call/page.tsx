@@ -7,7 +7,7 @@ import { Phone } from "lucide-react";
 export default function CallPage() {
   return (
     <>
-      <BackButton href="/new-query" />
+      <BackButton href="/" />
       <PageHeader 
         title="Canal: Llamada"
         description="Complete los detalles de la consulta recibida por llamada telefónica."

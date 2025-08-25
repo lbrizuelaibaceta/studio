@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MessageSquare, Phone } from 'lucide-react';
 import PageHeader from '@/components/shared/PageHeader';
-import BackButton from '@/components/shared/BackButton';
 
 export default function NewQueryPage() {
   const channels = [
@@ -14,7 +13,7 @@ export default function NewQueryPage() {
 
   return (
     <>
-      <BackButton href="/" />
+      {/* No back button here, as this is the new root for vendors */}
       <div className="flex flex-col items-center justify-center">
         <PageHeader 
           title="Registrar Nueva Consulta"

@@ -126,7 +126,7 @@ export default function ReportsPage() {
 
   return (
     <>
-      <BackButton href="/" />
+      <BackButton href="/dashboard" />
       <div className="flex flex-col items-center">
         <PageHeader
           title="Reportes de Consultas"
