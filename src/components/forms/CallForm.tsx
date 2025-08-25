@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -79,6 +79,9 @@ export default function CallForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CardContent className="space-y-6">
+            
+            <FormCommonFields control={form.control} />
+
             <FormField
               control={form.control}
               name="source"
@@ -88,7 +91,7 @@ export default function CallForm() {
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccione una opción" />
+                        <SelectValue placeholder="Seleccione una opción (opcional)" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -119,8 +122,6 @@ export default function CallForm() {
                 )}
               />
             )}
-            
-            <FormCommonFields control={form.control} />
 
           </CardContent>
           <CardFooter>

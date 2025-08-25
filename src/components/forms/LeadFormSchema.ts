@@ -33,7 +33,7 @@ export type WhatsAppFormData = z.infer<typeof whatsAppLeadSchema>;
 
 export const callLeadSchema = baseLeadSchema.extend({
   channelType: z.literal("Llamada"),
-  source: z.enum(["Google", "Ya es cliente", "Recomendación", "Otro"], { required_error: "Seleccione cómo conoció la empresa." }),
+  source: z.enum(["Google", "Ya es cliente", "Recomendación", "Otro"]).optional(),
   otherSourceDetail: z.string().optional(),
 }).refine(data => data.source !== "Otro" || (data.source === "Otro" && data.otherSourceDetail && data.otherSourceDetail.trim() !== ""), {
   message: "Especifique el otro medio.",
