@@ -61,9 +61,10 @@ const channelOptions: { value: ChannelType | typeof ALL_FILTER_SENTINEL; label: 
 
 const interestLevelOptions: { value: InterestLevel | typeof ALL_FILTER_SENTINEL; label: string }[] = [
   { value: ALL_FILTER_SENTINEL, label: "Todos los Estados" },
-  { value: "caliente", label: "Caliente" },
-  { value: "templado", label: "Templado" },
-  { value: "frío", label: "Frío" },
+  { value: "caliente", label: "Muy interesado" },
+  { value: "templado", label: "Interesado" },
+  { value: "frío", label: "Desinteresado" },
+  { value: "erroneo", label: "Erroneo/Equivocado" },
 ];
 
 const salonOptionsList = [

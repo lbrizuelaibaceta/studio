@@ -1,7 +1,7 @@
 
 import { z } from 'zod';
 
-const interestLevels = ["caliente", "templado", "frío"] as const;
+const interestLevels = ["caliente", "templado", "frío", "erroneo"] as const;
 const requiredString = z.string().min(1, "Este campo es requerido.");
 
 export const salonNames = [

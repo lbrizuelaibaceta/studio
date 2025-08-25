@@ -1,5 +1,5 @@
 
-export type InterestLevel = "caliente" | "templado" | "frío";
+export type InterestLevel = "caliente" | "templado" | "frío" | "erroneo";
 export type ChannelType = "WhatsApp" | "Llamada";
 
 export interface BaseLead {

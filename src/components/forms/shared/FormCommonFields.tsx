@@ -17,7 +17,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Flame, Sun, Snowflake } from "lucide-react";
+import { Flame, Sun, Snowflake, XCircle } from "lucide-react";
 import type { InterestLevel } from "@/types";
 import { salonNames, type SalonName } from "../LeadFormSchema";
 
@@ -29,6 +29,7 @@ const interestOptions: { value: InterestLevel; label: string; icon: React.Elemen
   { value: "caliente", label: "Muy interesado", icon: Flame },
   { value: "templado", label: "Interesado", icon: Sun },
   { value: "frío", label: "Desinteresado", icon: Snowflake },
+  { value: "erroneo", label: "Erroneo/Equivocado", icon: XCircle },
 ];
 
 const salonOptions: { value: SalonName; label: string }[] = salonNames.map(name => ({ value: name, label: name }));
@@ -46,7 +47,7 @@ export default function FormCommonFields({ control }: FormCommonFieldsProps) {
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-4 gap-4"
               >
                 {interestOptions.map((option) => (
                   <FormItem key={option.value} className="flex items-center space-x-3 space-y-0">
