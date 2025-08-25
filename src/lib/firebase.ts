@@ -3,20 +3,23 @@ import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getFirestore, collection, addDoc, serverTimestamp, Firestore, getDocs, query, orderBy, Timestamp, setDoc, doc } from "firebase/firestore";
 import type { LeadFormData, StoredLead, StoredWhatsAppLead, StoredCallLead } from "@/types";
 
+// ATENCIÓN: ¡Reemplaza estos valores con tus credenciales reales de Firebase!
+// Puedes encontrarlos en la configuración de tu proyecto en la consola de Firebase.
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "TU_API_KEY_VA_AQUI",
+  authDomain: "TU_AUTH_DOMAIN_VA_AQUI",
+  projectId: "TU_PROJECT_ID_VA_AQUI",
+  storageBucket: "TU_STORAGE_BUCKET_VA_AQUI",
+  messagingSenderId: "TU_MESSAGING_SENDER_ID_VA_AQUI",
+  appId: "TU_APP_ID_VA_AQUI",
 };
 
 // Initialize Firebase
 let app: FirebaseApp;
 if (getApps().length === 0) {
-  if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
-    throw new Error("CRITICAL: NEXT_PUBLIC_FIREBASE_PROJECT_ID is not defined in .env.local");
+  // Check if any of the placeholder values are still there.
+  if (Object.values(firebaseConfig).some(value => value.startsWith("TU_"))) {
+     console.error("CRITICAL: Firebase config is not set. Please update src/lib/firebase.ts with your project credentials.");
   }
   app = initializeApp(firebaseConfig);
 } else {
