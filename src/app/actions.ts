@@ -27,19 +27,12 @@ export async function saveLeadAction(leadData: LeadFormData): Promise<ActionResu
       revalidatePath('/');
       return { success: true, message: "Consulta registrada exitosamente." };
     } else {
-      return { success: false, message: "Error al registrar la consulta.", error: result.error };
+      // Pass the specific error message from the Firestore function
+      return { success: false, message: result.error || "Error desconocido al registrar la consulta." };
     }
-  } catch (error) {
-    console.error("Error in saveLeadAction (raw): ", error); 
-    let errorMessage = "Error interno del servidor procesando la solicitud.";
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === 'string') {
-      errorMessage = error;
-    } else if (typeof error === 'object' && error !== null && 'toString' in error) {
-      errorMessage = error.toString();
-    }
-    console.error("Error in saveLeadAction (processed message): ", errorMessage);
+  } catch (error: any) {
+    console.error("Error in saveLeadAction: ", error); 
+    const errorMessage = error.message || "Error interno del servidor procesando la solicitud.";
     return { success: false, message: "Error interno del servidor.", error: errorMessage };
   }
 }

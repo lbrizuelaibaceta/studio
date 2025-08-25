@@ -67,7 +67,6 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
     try {
-      // Corrected argument order: email, password, userName, salonName
       await register(data.email, data.password, data.userName, data.salonName);
       toast({
         title: "Registro exitoso",
@@ -75,7 +74,10 @@ export default function RegisterPage() {
       });
       // The ProtectedRoute will handle redirection after login state changes.
     } catch (error: any) {
-      let errorMessage = "Ocurrió un error desconocido.";
+      console.error("Registration failed:", error);
+      let errorMessage = "Ocurrió un error desconocido durante el registro.";
+
+      // Provide more specific feedback based on Firebase error codes
       if (error.code) {
         switch (error.code) {
           case 'auth/email-already-in-use':
@@ -84,10 +86,20 @@ export default function RegisterPage() {
           case 'auth/weak-password':
             errorMessage = "La contraseña es muy débil. Debe tener al menos 6 caracteres.";
             break;
+          case 'auth/invalid-email':
+            errorMessage = "El formato del email no es válido.";
+            break;
+          case 'permission-denied':
+          case 'storage/unauthorized':
+             errorMessage = "Error de permisos. Contacte al administrador. Es posible que las reglas de seguridad de la base de datos no estén configuradas correctamente.";
+             break;
           default:
-            errorMessage = "Error al registrar la cuenta. Por favor, intente de nuevo.";
+            errorMessage = `Error al registrar: ${error.message} (Código: ${error.code})`;
         }
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+      
       toast({
         title: "Error de registro",
         description: errorMessage,
