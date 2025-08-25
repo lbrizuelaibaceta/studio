@@ -4,7 +4,7 @@
 import * as React from "react";
 import { format, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
-import { Calendar as CalendarIcon, BarChartBig, XCircle } from "lucide-react";
+import { Calendar as CalendarIcon, BarChartBig, XCircle, FileDown } from "lucide-react";
 
 import PageHeader from "@/components/shared/PageHeader";
 import BackButton from "@/components/shared/BackButton";
@@ -48,7 +48,6 @@ function LeadSpecificDetails({ lead }: { lead: StoredLead }) {
       const callLead = lead as StoredCallLead;
       return <TableCell>{callLead.source} {callLead.source === 'Otro' ? `(${(callLead.otherSourceDetail || 'N/A')})` : ''}</TableCell>;
     default:
-      const _exhaustiveCheck: never = lead.channelType; // This will error if a channel type is missed
       return <TableCell>N/A</TableCell>;
   }
 }
@@ -121,7 +120,72 @@ export default function ReportsPage() {
   
   const formatDate = (date: Date | undefined): string => {
     if (!date) return "Seleccione una fecha";
-    return format(date, "PPP", { locale: es }); // Format as "dd 'de' LLLL 'de' yy" e.g. 15 de junio de 24
+    return format(date, "PPP", { locale: es });
+  };
+
+  const handleExportCSV = () => {
+    if (!filteredLeads.length) return;
+
+    // Define CSV headers
+    const headers = [
+      "Fecha",
+      "Vendedor",
+      "Salon",
+      "Canal",
+      "Detalle Canal",
+      "Nivel Interes",
+      "Comentario",
+    ];
+
+    const escapeCSV = (str: string | undefined | null) => {
+        if (str === undefined || str === null) return '';
+        const res = String(str);
+        // If the string contains a comma, double quote, or newline, wrap it in double quotes
+        if (res.includes(',') || res.includes('"') || res.includes('\n')) {
+            // Escape any existing double quotes by doubling them
+            return `"${res.replace(/"/g, '""')}"`;
+        }
+        return res;
+    };
+
+
+    // Map data to CSV rows
+    const rows = filteredLeads.map(lead => {
+      let channelDetail = "";
+      if (lead.channelType === "WhatsApp") {
+        channelDetail = (lead as StoredWhatsAppLead).subChannel;
+      } else if (lead.channelType === "Llamada") {
+        const callLead = lead as StoredCallLead;
+        channelDetail = callLead.source || "";
+        if (callLead.source === "Otro") {
+            channelDetail += ` (${callLead.otherSourceDetail || 'N/A'})`;
+        }
+      }
+
+      return [
+        escapeCSV(lead.createdAt ? format(lead.createdAt, "dd/MM/yyyy HH:mm", { locale: es }) : 'N/A'),
+        escapeCSV(lead.userName),
+        escapeCSV(lead.salonName),
+        escapeCSV(lead.channelType),
+        escapeCSV(channelDetail),
+        escapeCSV(lead.interestLevel),
+        escapeCSV(lead.comment),
+      ].join(',');
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    
+    // Create a Blob and trigger download
+    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'reporte_consultas.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -279,13 +343,22 @@ export default function ReportsPage() {
               </Table>
             )}
           </CardContent>
-           <CardFooter className="flex justify-end pt-4">
+           <CardFooter className="flex justify-between items-center pt-4">
             <p className="text-sm text-muted-foreground font-semibold">
               Total de registros mostrados: {filteredLeads.length}
             </p>
+             <Button 
+                onClick={handleExportCSV}
+                disabled={filteredLeads.length === 0 || isLoading}
+             >
+                <FileDown className="mr-2 h-4 w-4" />
+                Exportar a CSV
+            </Button>
           </CardFooter>
         </Card>
       </div>
     </>
   );
 }
+
+    
