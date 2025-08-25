@@ -36,11 +36,11 @@ export default function DashboardPage() {
               <CardTitle className="font-headline text-3xl text-center">{section.name}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center flex-grow">
-              <p className="text-muted-foreground text-center mb-6 h-16">{section.description}</p>
+              <p className="text-muted-foreground text-center mb-6 h-12">{section.description}</p>
               <Button asChild className="w-full mt-auto">
                 <Link href={section.href}>Acceder</Link>
               </Button>
-            </Content>
+            </CardContent>
           </Card>
         ))}
       </div>
