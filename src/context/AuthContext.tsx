@@ -8,9 +8,11 @@ import {
   signInWithEmailAndPassword,
   signOut,
   User,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { app, db } from "@/lib/firebase"; 
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import type { SalonName } from "@/components/forms/LeadFormSchema";
 
 interface UserProfile {
   userName: string;
@@ -26,6 +28,7 @@ interface AuthContextType {
   salon: string | null;
   login: (email: string, password: string) => Promise<any>;
   logout: () => Promise<void>;
+  register: (email: string, password: string, userName: string, salonName: SalonName) => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,8 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUserName(userProfile.userName);
             setSalon(userProfile.salonName);
           } else {
-            // Handle case where user exists in Auth but not in Firestore
-            console.error("User profile not found in Firestore!");
+            // This can happen briefly during registration before the doc is created.
+            // Or if a user is in Auth but not Firestore for some reason.
+            console.warn("User profile not found in Firestore for UID:", user.uid);
             setIsAdmin(false);
             setUserName(null);
             setSalon(null);
@@ -82,6 +86,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return signOut(auth);
   };
 
+  const register = async (email: string, password: string, userName: string, salonName: SalonName) => {
+    if (!db) {
+      throw new Error("Firestore is not initialized.");
+    }
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Now, create the user document in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      userName: userName,
+      salonName: salonName,
+      role: 'vendedor' // All new sign-ups are vendors
+    });
+
+    // The onAuthStateChanged listener will automatically pick up the new user state
+    return userCredential;
+  };
+
+
   const value = {
     user,
     loading,
@@ -90,6 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     salon,
     login,
     logout,
+    register,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

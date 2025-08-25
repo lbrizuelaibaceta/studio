@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from 'next/link';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -139,11 +140,17 @@ export default function LoginPage() {
                 )}
               />
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col gap-4">
               <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading ? "Ingresando..." : "Ingresar"}
                 <LogIn className="ml-2 h-4 w-4" />
               </Button>
+               <p className="text-sm text-center text-muted-foreground">
+                ¿No tienes una cuenta?{' '}
+                <Link href="/register" className="underline text-primary hover:text-primary/80">
+                  Regístrate aquí
+                </Link>
+              </p>
             </CardFooter>
           </form>
         </Form>

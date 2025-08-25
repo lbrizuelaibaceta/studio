@@ -15,14 +15,14 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
       return; // Do nothing while loading
     }
 
-    const isAuthPage = pathname === '/login';
+    const isAuthPage = pathname === '/login' || pathname === '/register';
 
     if (!user && !isAuthPage) {
       router.push('/login');
     }
 
     if (user && isAuthPage) {
-      // User is logged in and on the login page, redirect them
+      // User is logged in and on an auth page, redirect them
       router.push(isAdmin ? '/dashboard' : '/new-query');
     }
     
@@ -42,15 +42,15 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  // If there's no user and we're not on the login page, we'll show nothing
+  // If there's no user and we're not on an auth page, we'll show nothing
   // as the useEffect will handle the redirection. This prevents a flash of
   // content that shouldn't be visible.
-  if (!user && pathname !== '/login') {
+  if (!user && !(pathname === '/login' || pathname === '/register')) {
     return null;
   }
   
-  // If user is on login page, render the login page, which is the children.
-  if (pathname === '/login') {
+  // If user is on login or register page, render the page, which is the children.
+  if (pathname === '/login' || pathname === '/register') {
     return <>{children}</>;
   }
 
