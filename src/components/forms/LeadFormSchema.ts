@@ -19,7 +19,7 @@ export type SalonName = typeof salonNames[number];
 
 const baseLeadSchema = z.object({
   interestLevel: z.enum(interestLevels, { required_error: "Seleccione un nivel de interés." }),
-  comment: requiredString,
+  comment: z.string().min(1, "Este campo es requerido."),
   salonName: z.enum(salonNames, { required_error: "Seleccione un salón." }),
   userName: requiredString,
 });
@@ -40,10 +40,3 @@ export const callLeadSchema = baseLeadSchema.extend({
   path: ["otherSourceDetail"],
 });
 export type CallFormData = z.infer<typeof callLeadSchema>;
-
-
-export const inPersonLeadSchema = baseLeadSchema.extend({
-  channelType: z.literal("Presencial"),
-  arrivalMethod: z.enum(["Paso casual", "Medio de comunicación", "Google", "Recomendación"], { required_error: "Seleccione cómo llegó al salón." }),
-});
-export type InPersonFormData = z.infer<typeof inPersonLeadSchema>;

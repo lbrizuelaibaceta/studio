@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, Phone, Users } from 'lucide-react';
+import { MessageSquare, Phone } from 'lucide-react';
 import PageHeader from '@/components/shared/PageHeader';
 import BackButton from '@/components/shared/BackButton';
 
@@ -10,7 +10,6 @@ export default function NewQueryPage() {
   const channels = [
     { name: 'WhatsApp', href: '/whatsapp', icon: MessageSquare, description: 'Registrar consulta por WhatsApp' },
     { name: 'Llamada', href: '/call', icon: Phone, description: 'Registrar consulta por llamada telefónica' },
-    { name: 'Presencial', href: '/in-person', icon: Users, description: 'Registrar consulta de visita física' },
   ];
 
   return (
@@ -21,7 +20,7 @@ export default function NewQueryPage() {
           title="Registrar Nueva Consulta"
           description="Seleccione el canal por el cual se recibió la consulta."
         />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-xl">
           {channels.map((channel) => (
             <Card key={channel.name} className="hover:shadow-lg transition-shadow duration-300">
               <CardHeader className="items-center">

@@ -9,7 +9,7 @@ import { Calendar as CalendarIcon, BarChartBig, XCircle } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import BackButton from "@/components/shared/BackButton";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getLeadsFromFirestore, type StoredLead, type StoredWhatsAppLead, type StoredCallLead, type StoredInPersonLead } from "@/lib/firebase";
+import { getLeadsFromFirestore, type StoredLead, type StoredWhatsAppLead, type StoredCallLead } from "@/lib/firebase";
 import { salonNames } from "@/components/forms/LeadFormSchema";
 import type { InterestLevel, ChannelType } from "@/types";
 
@@ -47,10 +47,8 @@ function LeadSpecificDetails({ lead }: { lead: StoredLead }) {
     case "Llamada":
       const callLead = lead as StoredCallLead;
       return <TableCell>{callLead.source} {callLead.source === 'Otro' ? `(${(callLead.otherSourceDetail || 'N/A')})` : ''}</TableCell>;
-    case "Presencial":
-      return <TableCell>{(lead as StoredInPersonLead).arrivalMethod}</TableCell>;
     default:
-      const _exhaustiveCheck: never = lead.channelType; // This will error if a channel type is missed and lead is correctly typed
+      const _exhaustiveCheck: never = lead.channelType; // This will error if a channel type is missed
       return <TableCell>N/A</TableCell>;
   }
 }
@@ -59,7 +57,6 @@ const channelOptions: { value: ChannelType | typeof ALL_FILTER_SENTINEL; label: 
   { value: ALL_FILTER_SENTINEL, label: "Todos los Canales" },
   { value: "WhatsApp", label: "WhatsApp" },
   { value: "Llamada", label: "Llamada" },
-  { value: "Presencial", label: "Presencial" },
 ];
 
 const interestLevelOptions: { value: InterestLevel | typeof ALL_FILTER_SENTINEL; label: string }[] = [
@@ -123,7 +120,7 @@ export default function ReportsPage() {
   
   const formatDate = (date: Date | undefined): string => {
     if (!date) return "Seleccione una fecha";
-    return format(date, "PPP", { locale: es }); // Format as "dd 'de' LLLL 'de' yyyy" e.g. 15 de junio de 2024
+    return format(date, "PPP", { locale: es }); // Format as "dd 'de' LLLL 'de' yy" e.g. 15 de junio de 24
   };
 
   return (
@@ -257,7 +254,7 @@ export default function ReportsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[180px]">Fecha</TableHead>
-                    <TableHead>Usuario</TableHead>
+                    <TableHead>Vendedor</TableHead>
                     <TableHead>Salón</TableHead>
                     <TableHead>Canal</TableHead>
                     <TableHead>Detalle Canal</TableHead>

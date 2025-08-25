@@ -1,7 +1,7 @@
 
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getFirestore, collection, addDoc, serverTimestamp, Firestore, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
-import type { LeadFormData, StoredLead, StoredWhatsAppLead, StoredCallLead, StoredInPersonLead } from "@/types";
+import type { LeadFormData, StoredLead, StoredWhatsAppLead, StoredCallLead } from "@/types";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -37,7 +37,7 @@ if (!projectId) {
       console.log("Firebase app initialized successfully.");
     } catch (initError) {
       console.error("CRITICAL Firebase App Initialization Error:", initError);
-      app = undefined; // Ensure app is undefined if init fails
+      app = undefined; 
     }
   } else {
     app = getApps()[0];
@@ -50,7 +50,7 @@ if (!projectId) {
       console.log("Firestore DB instance obtained successfully.");
     } catch (firestoreError) {
       console.error("CRITICAL Firestore Initialization Error (getFirestore):", firestoreError);
-      db = undefined; // Ensure db is undefined if getFirestore fails
+      db = undefined; 
     }
   } else {
     console.error("Firebase app is not initialized, cannot get Firestore instance.");
@@ -125,19 +125,10 @@ export const getLeadsFromFirestore = async (): Promise<StoredLead[]> => {
             otherSourceDetail: data.otherSourceDetail,
           } as StoredCallLead;
           break;
-        case "Presencial":
-          lead = {
-            ...leadBase,
-            channelType: "Presencial",
-            arrivalMethod: data.arrivalMethod,
-          } as StoredInPersonLead;
-          break;
         default:
-          console.warn(`Unknown channel type: ${data.channelType} for doc ID: ${doc.id}`);
-          lead = {
-            ...leadBase,
-            channelType: data.channelType,
-          } as StoredLead;
+          console.warn(`Unknown or removed channel type: ${data.channelType} for doc ID: ${doc.id}`);
+          // Skip unknown types
+          return;
       }
       leads.push(lead);
     });

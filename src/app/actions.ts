@@ -2,7 +2,7 @@
 "use server";
 
 import { addLeadToFirestore } from "@/lib/firebase";
-import type { LeadFormData } from "@/types"; // Changed to LeadFormData
+import type { LeadFormData } from "@/types";
 import { revalidatePath } from "next/cache";
 
 interface ActionResult {
@@ -15,8 +15,7 @@ export async function saveLeadAction(leadData: LeadFormData): Promise<ActionResu
   try {
     const result = await addLeadToFirestore(leadData);
     if (result.success) {
-      // Revalidate paths if reports or lists are displayed and need to be fresh
-      revalidatePath('/reports'); // Revalidate reports page after adding a new lead
+      revalidatePath('/reports'); 
       revalidatePath('/');
       return { success: true, message: "Consulta registrada exitosamente." };
     } else {
