@@ -2,9 +2,11 @@
 "use client";
 
 import * as React from "react";
-import { format, isSameDay } from "date-fns";
+import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar as CalendarIcon, BarChartBig, XCircle, FileDown } from "lucide-react";
+import { DateRange } from "react-day-picker";
+
 
 import PageHeader from "@/components/shared/PageHeader";
 import BackButton from "@/components/shared/BackButton";
@@ -77,7 +79,7 @@ export default function ReportsPage() {
   const [filteredLeads, setFilteredLeads] = React.useState<StoredLead[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  const [dateFilter, setDateFilter] = React.useState<Date | undefined>(undefined);
+  const [dateFilter, setDateFilter] = React.useState<DateRange | undefined>(undefined);
   const [salonFilter, setSalonFilter] = React.useState<string>(""); // Empty string means no filter
   const [channelFilter, setChannelFilter] = React.useState<string>("");
   const [interestFilter, setInterestFilter] = React.useState<string>("");
@@ -96,9 +98,33 @@ export default function ReportsPage() {
   React.useEffect(() => {
     let leads = [...allLeads];
 
-    if (dateFilter) {
-      leads = leads.filter(lead => lead.createdAt && isSameDay(lead.createdAt, dateFilter));
+    if (dateFilter?.from && dateFilter?.to) {
+      leads = leads.filter(lead => {
+          if (!lead.createdAt) return false;
+          // Set hours to 0 to compare dates only
+          const leadDate = new Date(lead.createdAt);
+          leadDate.setHours(0, 0, 0, 0);
+
+          const fromDate = new Date(dateFilter.from!);
+          fromDate.setHours(0, 0, 0, 0);
+
+          const toDate = new Date(dateFilter.to!);
+          // Include the whole 'to' day
+          toDate.setHours(23, 59, 59, 999); 
+          
+          return leadDate >= fromDate && leadDate <= toDate;
+      });
+    } else if (dateFilter?.from) {
+        leads = leads.filter(lead => {
+             if (!lead.createdAt) return false;
+             const leadDate = new Date(lead.createdAt);
+             leadDate.setHours(0, 0, 0, 0);
+             const fromDate = new Date(dateFilter.from!);
+             fromDate.setHours(0, 0, 0, 0);
+             return leadDate.getTime() === fromDate.getTime();
+        });
     }
+
     if (salonFilter) {
       leads = leads.filter(lead => lead.salonName === salonFilter);
     }
@@ -116,11 +142,6 @@ export default function ReportsPage() {
     setSalonFilter("");
     setChannelFilter("");
     setInterestFilter("");
-  };
-  
-  const formatDate = (date: Date | undefined): string => {
-    if (!date) return "Seleccione una fecha";
-    return format(date, "PPP", { locale: es });
   };
 
   const handleExportCSV = () => {
@@ -206,7 +227,7 @@ export default function ReportsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
               {/* Date Filter */}
               <div className="space-y-1">
-                <label htmlFor="date-filter" className="text-sm font-medium">Fecha</label>
+                <label htmlFor="date-filter" className="text-sm font-medium">Rango de Fechas</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -218,15 +239,28 @@ export default function ReportsPage() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formatDate(dateFilter)}
+                       {dateFilter?.from ? (
+                        dateFilter.to ? (
+                          <>
+                            {format(dateFilter.from, "LLL dd, y", { locale: es })} -{" "}
+                            {format(dateFilter.to, "LLL dd, y", { locale: es })}
+                          </>
+                        ) : (
+                          format(dateFilter.from, "LLL dd, y", { locale: es })
+                        )
+                      ) : (
+                        <span>Seleccione un rango</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
+                  <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
-                      mode="single"
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateFilter?.from}
                       selected={dateFilter}
                       onSelect={setDateFilter}
-                      initialFocus
+                      numberOfMonths={2}
                       locale={es}
                     />
                   </PopoverContent>
@@ -360,5 +394,3 @@ export default function ReportsPage() {
     </>
   );
 }
-
-    
